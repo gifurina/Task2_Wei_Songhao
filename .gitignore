@@ -11,6 +11,7 @@ chroma_db/
 cache/
 llm_cache/
 embeddings_cache/
+chroma_db
 chroma.sqlite3
 chroma.sqlite3-shm
 chroma.sqlite3-wal
