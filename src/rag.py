@@ -140,6 +140,7 @@ class RagService:
             return
 
         print(f"{len(pdf_files)}pdf files found")
+        print("loading documents...")
         for pdf in pdf_files:
             self.load_file(str(pdf))
 

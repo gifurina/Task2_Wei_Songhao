@@ -65,6 +65,6 @@ class KnowledgeBase:
     def get_retriever(self):
         return self.chroma.as_retriever(
             search_type="similarity",
-            search_kwargs={"k": 5}
+            search_kwargs={"k": 6}
         )
 
