@@ -5,17 +5,17 @@
 ![Chroma](https://img.shields.io/badge/Chroma-向量数据库-9cf)
 ![DeepSeek](https://img.shields.io/badge/LLM-DeepSeek-blueviolet)
 
-**课程作业**：基于 LangChain + Chroma + DeepSeek 的 RAG 问答系统
+**课程作业**：基于 LangChain + Chroma + llm 的 RAG 问答系统
 
 ## 项目概述
 
-本项目实现了一个检索增强生成（RAG）技术文档智能问答系统，主要特点包括：
+本项目实现了一个检索增强生成(RAG)技术文档智能问答系统，主要特点包括：
 
 - 自动加载 `./rag_docs` 目录下的 PDF 文档
 - 通过 MD5 校验实现文档幂等处理，避免重复向量化
 - 使用 `RecursiveCharacterTextSplitter` 进行合理文本分块
 - 嵌入模型：阿里云 DashScope `text-embedding-v4`
-- 向量数据库：Chroma
+- 向量数据库：`Chroma`
 - 生成模型：DeepSeek `deepseek-chat`
 - 支持单次问答与多轮对话
 - 回答严格基于检索到的文档内容，显著减少幻觉
@@ -24,17 +24,18 @@
 ```text
 Task2/
 ├── src/                    # 核心源代码
-│   ├── main.py             # 命令行入口（单次 / 交互模式）
-│   ├── rag.py              # RAG 核心服务逻辑（RagService 类）
-│   ├── config.py           # 配置管理（模型、路径、API Key 等）
-│   ├── knowledge_base.py   # 知识库管理（文档加载、分块、嵌入、检索）
-│   ├── chat_history_store.py # 会话历史存储（内存实现，可扩展）
-│   └── util.py             # 通用工具函数（MD5 计算等）
-├── rag_docs/               # 原始文档目录（目前主要为 PDF）
+│   ├── main.py             # 命令行入口
+│   ├── rag.py              # RagService
+│   ├── config.py           # 配置管理
+│   ├── knowledge_base.py   # 知识库管理
+│   ├── chat_history_store.py # 会话存储
+│   └── util.py             # 通用工具函数
+├── rag_docs/               # 原始文档目录
 │   └── 西安美食情况的研究.pdf
-├── data/                   # 元数据、校验文件、缓存
-│   └── md5.txt             # 已处理文档的 MD5 记录（防重复向量化）
-├── chroma_db/              # Chroma 向量数据库持久化目录（已 gitignore）
+├── others
+│   └── md5.txt             # 已处理文档的MD5记录(已 gitignore)
+├── chroma_db/              # Chroma 向量数据库持久化目录(已 gitignore)
+├── demos                  
 ├── .gitignore
 ├── requirements.txt
 └── README.md
@@ -79,7 +80,7 @@ set DEEPSEEK_API_KEY=sk-你的DeepSeek密钥
 python src/main.py "西安有哪些著名小吃？"
 
 # 交互式多轮对话
-python src/main.py --mode chat
+python src/main.py "西安有哪些著名小吃？" --mode chat
 
 聊天模式支持指令：
 /clear 或 /c    → 清空当前会话历史
