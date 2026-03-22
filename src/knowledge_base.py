@@ -9,6 +9,8 @@
 核心类：KnowledgeBase
 """
 import os
+from pathlib import Path
+
 import config
 from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -31,14 +33,14 @@ class KnowledgeBase:
         )
 
     def upload_by_pdf(self, file_path: str):
+
+        md5_hex = get_file_md5(file_path)
+
+        if check_md5(md5_hex):
+            return f"[SKIP] file already exists {file_path}"
+
         try:
-            if not os.path.exists(file_path):
-                return f"[ERROR] file not found:{file_path}"
-
-            md5_hex = get_file_md5(file_path)
-
-            if check_md5(md5_hex):
-                return "[SKIP] file already exists"
+            print(f"loading {file_path}...")
 
             loader = PyPDFLoader(file_path=file_path)
             docs = loader.load()

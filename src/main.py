@@ -23,7 +23,7 @@ def main():
     rag = get_rag_service()
 
     parser = argparse.ArgumentParser(
-        description=" ",
+        description="RAG问答系统入口",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter  # 显示默认值
     )
 
@@ -36,20 +36,17 @@ def main():
         "--mode",
         choices=["once", "chat"],
         default="once",
-        help="默认为once，即回答一次问题后exit退出程序，可选为chat模式，即多轮附带历史信息的聊天模式"
+        help="default:once，可选为chat模式，即多轮附带历史信息的聊天模式"
     )
 
     args = parser.parse_args()
 
     if args.mode == "once":
-
         rag.run(args.user_input)
-
         return 0
+
     elif args.mode == "chat":
-
         rag.run(args.user_input)
-
         user_input = input("\nyou:")
 
         while user_input.lower() not in ["/exit","/e"]:

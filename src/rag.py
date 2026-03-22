@@ -22,41 +22,35 @@ from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from chat_history_store import get_history
 
-_rag_service_instance = None
 
 
 def get_rag_service():
-    """Get the unique RagService instance"""
-    global _rag_service_instance
-    if _rag_service_instance is None:
-        print("initialize RagService ...")
 
-        embedding = DashScopeEmbeddings(model=config.embedding_model_name)
-        _rag_service_instance = RagService(embedding=embedding)
-    return _rag_service_instance
+    embedding = DashScopeEmbeddings(model=config.embedding_model_name)
+    rag_service_instance = RagService(embedding=embedding)
+
+    return rag_service_instance
 
 class RagService:
     def __init__(self,embedding):
         try:
             self.embedding = embedding
 
+            print("init knowledge_base ...")
             self.knowledge_base = KnowledgeBase(embedding)
-            print("Vector database connected successfully")
+            print("knowledge_base connected successfully")
 
-            self._loaded_files = set()
-            self.load_all_documents()
+            self.load_all_pdf_documents()
 
         except Exception as e:
             print("failed to initialize RAG system")
             print(f"[ERROR]：{type(e).__name__}: {str(e)}")
             raise
 
-
-
         self.prompt_template = ChatPromptTemplate.from_messages([
             ("system", """你是一位专业、严谨的技术文档问答助手。
-            请严格依据以下[参考资料]来回答用户问题。
-            - 如果资料中能找到答案，请尽量引用原文
+            请严格依据以下参考资料来回答用户问题。
+            - 如果资料中有相关信息，紧密结合相关信息回答
             - 如果资料中没有相关信息，请直接说“当前资料暂无相关内容”，不要编造
             - 回答要准确、简洁、结构清晰"""),
 
@@ -83,13 +77,11 @@ class RagService:
 
             parts = []
             for idx, doc in enumerate(docs, 1):
-                source = doc.metadata.get("source", "unknown").split("/")[-1]
+                source = doc.metadata.get("source", "unknown").split("\\")[-1]
                 page = doc.metadata.get("page")
                 page_str = f"page:{page + 1}" if page is not None else "unknown"
 
                 content = doc.page_content.strip()
-                if len(content) > 800:
-                    content = content[:780] + "..."
 
                 block = (
                     f"[reference] {idx}\n"
@@ -98,7 +90,7 @@ class RagService:
                     f"{'─' * 60}\n"
                 )
                 parts.append(block)
-
+                print(block)
             return "\n".join(parts)
 
         def format_for_retriever(value):
@@ -128,7 +120,7 @@ class RagService:
         )
         return chat_chain
 
-    def load_all_documents(self, directory: str = "./rag_docs"):
+    def load_all_pdf_documents(self, directory: str = "./rag_docs"):
         folder = Path(directory)
         if not folder.is_dir():
             print(f"directory not found:{directory}")
@@ -145,12 +137,7 @@ class RagService:
             self.load_file(str(pdf))
 
     def load_file(self, file_path: str):
-        if file_path in self._loaded_files:
-            print(f"this file uploaded,skip：{file_path}")
-            return "already loaded"
         result = self.knowledge_base.upload_by_pdf(file_path)
-        if "successfully" in result:
-            self._loaded_files.add(file_path)
         return result
 
     def run(self, user_input: str):
@@ -163,7 +150,7 @@ class RagService:
             print("\nAI answer:", end="", flush=True)
             for chunk in ai_res:
                 print(chunk, end="", flush=True)
-            print()
+            print("\n")
 
         except Exception as e:
             print(f"failed to generate AI answer")

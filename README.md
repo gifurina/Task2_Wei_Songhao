@@ -31,10 +31,9 @@ Task2/
 │   ├── chat_history_store.py # 会话存储
 │   └── util.py             # 通用工具函数
 ├── rag_docs/               # 原始文档目录
-│   └── 西安美食情况的研究.pdf
 ├── others
-│   └── md5.txt             # 已处理文档的MD5记录(已 gitignore)
-├── chroma_db/              # Chroma 向量数据库持久化目录(已 gitignore)
+│   └── md5.txt             # 已处理文档的MD5记录 (已gitignore)
+├── chroma_db/              # Chroma 向量数据库持久化目录 (已gitignore)
 ├── demos                  
 ├── .gitignore
 ├── requirements.txt
